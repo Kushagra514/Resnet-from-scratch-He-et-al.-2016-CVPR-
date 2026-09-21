@@ -46,7 +46,7 @@ A deeper plain network should theoretically be able to represent the shallower s
 ResNet changes the formulation so that the added layers learn a residual mapping rather than directly learning the complete desired mapping 
 
 
-##4. RESIDUAL LEARNING 
+## 4. RESIDUAL LEARNING 
 
 A plain network attempts to directly learn a desired mapping:
 H(x)
@@ -68,4 +68,24 @@ then:
 F(x) = H(x) -  x
      = x - x
      = 0
-    There
+    Therefore, an identity mapping corresponds to learning a zero residual.
+    This is important for the degradation problem because a deeper network should theoretically be able to preserve the mapping learned by a shallower network 
+
+### Numerical example
+
+Suppose:
+    x = 5
+    H(x) = 8
+
+    Then:
+
+    F(x) = H(x) - x
+         = 8 - 5
+         = 3
+
+    The residual block produces: F(x) + x = 3 + 5 = 8, which is the desired mapping.
+    The residual thus represents the change that must be applied to the input.
+
+### Key Intution
+Plain network :  Learn the complete tranformation H(x) 
+Residual network : Learn the required modification F(x) and add the original input x 

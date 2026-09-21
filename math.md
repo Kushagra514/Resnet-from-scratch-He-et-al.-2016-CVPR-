@@ -30,3 +30,13 @@ The important distinction is:
 -> Degradation: optimization of the deeper plain network becomes harder, and training error increases.
 
 The ResNet paper motivates residual learning as way to make the deeper network easier to optimize.
+
+## 3. IDENTITY MAPPING 
+An identity mapping is simply:
+    G(x) = x
+It leaves its input unchanged.
+    For eg-> x    = [2, 5, 9]
+             G(x) = [2, 5, 9]
+
+In the deeper-network argument, the newly added layers would ideally learn an identity mapping so that the deeper network could reproduce the shallower network's behaviour.
+

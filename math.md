@@ -44,3 +44,28 @@ In the deeper-network argument, the newly added layers would ideally learn an id
 
 A deeper plain network should theoretically be able to represent the shallower solution, but learning that solution through ordinary layers can be difficult.
 ResNet changes the formulation so that the added layers learn a residual mapping rather than directly learning the complete desired mapping 
+
+
+##4. RESIDUAL LEARNING 
+
+A plain network attempts to directly learn a desired mapping:
+H(x)
+
+Instead, residual learning reformulates the problem so that the stacked layers learn the residual
+F(x) = H(x) - x
+Here: 
+-H(x) is the desired underlying mapping
+-F(x) is the residual mapping
+-x is the original input 
+-F(x) + x is the output of the residual block.
+
+### Identity mapping
+
+If the desired mapping is simply:
+H(x) = x
+
+then:
+F(x) = H(x) -  x
+     = x - x
+     = 0
+    There

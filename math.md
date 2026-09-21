@@ -40,3 +40,7 @@ It leaves its input unchanged.
 
 In the deeper-network argument, the newly added layers would ideally learn an identity mapping so that the deeper network could reproduce the shallower network's behaviour.
 
+## MOTIVATION FOR RESIDUAL LEARNING 
+
+A deeper plain network should theoretically be able to represent the shallower solution, but learning that solution through ordinary layers can be difficult.
+ResNet changes the formulation so that the added layers learn a residual mapping rather than directly learning the complete desired mapping 

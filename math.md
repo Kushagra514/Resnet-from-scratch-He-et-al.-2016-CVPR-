@@ -89,3 +89,33 @@ Suppose:
 ### Key Intution
 Plain network :  Learn the complete tranformation H(x) 
 Residual network : Learn the required modification F(x) and add the original input x 
+
+## 5. RESIDUAL BLOCK ARCHITECTURE
+
+The residual function F(x) is implemented using learnable layers, such as convolution and batch normalization.
+
+A basic residual block can be represented as:
+
+x
+│
+├──────────────────────────────┐
+│                              │
+▼                              │
+Conv → BN → ReLU → Conv → BN   │
+│                              │
+└────────────────────────────► (+)
+                                │
+                               ReLU
+                                │
+                                ▼
+                                y
+
+The mathematical form is:
+
+y = ReLU(F(x) + x)
+The convolutional layers contain learnable parameters.
+The identity shortcut contains no learnable parameters whenn the input and output dimensions already match.
+
+When dimensions change, a projection shortcut  can be used:
+y = F(x) + W_s * x
+where W_s is a learned projection that makes the dimensions compatible.

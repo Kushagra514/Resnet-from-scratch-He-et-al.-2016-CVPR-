@@ -13,6 +13,9 @@ This is different from ordinary overfitting because the problem is observed in t
 ### Theroetical identity argument
 suppose a shalow network has learned a desired mapping: H(x)
 
+If additional layers could simply implement an identity mapping: G(x) = x, in that case the deeper network could actually behave exactly like the shallower network. Therefore, theoretically , increasing depth should not make the best achievable training solution worse.
+
+The practical problem is that ordinary optimization can have difficulty finding this identity mapping in a plain stack of layers. This motivated a different formulation of the learning problem.
 
 ## DEGRADATION Vs. VANISHING GRADIENTS
 

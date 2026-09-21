@@ -24,4 +24,18 @@ def get_cifar10_loaders(batch_size=128):
         transform = transform,
     )
 
-    train_loader =
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size = batch_size,
+        shuffle = True,
+        num_workers = 2,
+    )
+
+    test_loader = DataLoader(
+        test_dataset,
+        batch_size=batch_size,
+        shuffle = False,
+        num_workers = 2,  
+    )
+
+    return train_loader, test_loader

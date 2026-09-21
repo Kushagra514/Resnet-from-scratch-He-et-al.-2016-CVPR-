@@ -1,3 +1,19 @@
+# Mathematics and Concepts
+
+## 1. THE RESEARCH PROBLEM:
+Increasing network depth should theoretically provide a neural network with greater representational power.
+
+However, simply adding layers to a plain network does not necessarily make optimization easier.
+
+The ResNet paper identifies a degradation problem:
+as a plain network becomes deeper, its training error can actually increase.
+
+This is different from ordinary overfitting because the problem is observed in the training error itself.
+
+### Theroetical identity argument
+suppose a shalow network has learned a desired mapping: H(x)
+
+
 ## DEGRADATION Vs. VANISHING GRADIENTS
 
 The degradation problem should not be reduced to the vanishing-gradient problem.

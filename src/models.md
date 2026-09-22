@@ -42,4 +42,14 @@ Max pooling reduces spatial resolution.
 For eg : 32 x 32 -> 16 x 16 
 This reduces computation and gives later layers a larger effective receptive field.
 
-### Increas
+### Increasing Channels
+
+The network increases the number of feature channels while reducing spatial resolution:
+3 x 32 x 32 
+->  64 x 32 x 32
+->  64 x 16 x 16
+->  128 x 16 x 16
+->  128 x 8 x 8
+->  256 x 8 x 8 
+This allows the network to represent more feature type while using a more compact spatial resolution 
+

@@ -24,4 +24,22 @@ The convolution weights determine which local patterns the network corresponds t
 Stacking convolutional layers allows later layers to operate on features produced by earlier layers, and thus learn more complex representation.
 The network therefore builds incresingly useful feature representations as a consequence of learning its parameters.
 
-### 
+### ReLU
+
+ReLU is:
+
+ReLU(x) = max(0,x)
+
+It introduces non linearity into the network.
+
+### Batch Normalization
+
+Batch Normalization helps keep activations numerically well-behaved during training and contains learnable scale and shift parameters.
+
+### Max Pooling 
+
+Max pooling reduces spatial resolution.
+For eg : 32 x 32 -> 16 x 16 
+This reduces computation and gives later layers a larger effective receptive field.
+
+### Increas

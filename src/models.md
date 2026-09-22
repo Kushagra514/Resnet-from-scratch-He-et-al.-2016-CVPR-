@@ -53,3 +53,16 @@ The network increases the number of feature channels while reducing spatial reso
 ->  256 x 8 x 8 
 This allows the network to represent more feature type while using a more compact spatial resolution 
 
+
+### Final Classification 
+
+Adaptive average pooling converts:
+
+256 x 8 x 8 -> 256 x 1 x 1 
+
+After flattening:
+256 x 1 x 1 -> 256
+
+A linear layer maps the 256 features into 10 class logits:
+256 -> 10
+

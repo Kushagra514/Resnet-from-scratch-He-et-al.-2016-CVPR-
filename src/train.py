@@ -91,5 +91,49 @@ def main():
     criterion = nn.CrossEntropyLoss()
 
     optimizer = optim.SGD(
-            
+            model.parameters(),
+            lr = 0.1,
+            momentum = 0.9,
+            weight_decay = 5e-4,
     )
+
+    epochs = 3
+
+    with open(
+        "experiments/results/plain_baseline.csv",
+        "w",
+        newline = "",
+    ) as file:
+
+        writer =  csv.writer(file)
+
+        writer.writerow([
+            "epoch",
+            "train_loss",
+            "train_accuracy",
+            "test_loss",
+            "test_accuracy"
+        ])
+
+
+        for epoch in range(1, epochs + 1):
+            train_loss, train_accuracy = train_one_epoch(
+                model,
+                train_loader,
+                criterion,
+                optimizer,
+                device
+            )
+
+            test_loss, test_accuracy = evaluate(
+                model,
+                test_loader,
+                criterion,
+                device,
+            )
+
+            write.writerow([
+                epoch,
+                train_loss,
+                train_accuracy 
+            ])

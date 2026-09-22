@@ -1,3 +1,82 @@
+## PREREQUISITES
+
+### Channels
+
+A channel is one feature plane.
+
+A CIFAR-10 RGB image has 3 channels:
+
+- Red
+- Green
+- Blue
+
+A convolution can produce many learned feature channels.
+These are feature maps produced by different learned filters.
+
+For example:
+
+3 input channels -> 64 learned feature maps
+
+does not mean the image has 64 colors. It means the layer
+learns 64 different feature detectors.
+
+### Spatial Resolution
+
+Spatial resolution refers to the height and width of a
+feature map.
+
+For example:
+
+32 x 32 -> 16 x 16 -> 8 x 8
+
+means the spatial representation is being downsampled.
+
+### Why Increase Channels?
+
+As the spatial resolution becomes smaller, the network can
+use more feature channels to represent different kinds of
+learned patterns.
+
+The architecture therefore roughly follows:
+
+spatial resolution ↓
+feature channels ↑
+
+This is a common CNN design pattern.
+
+### Why Reduce Spatial Resolution?
+
+Downsampling:
+
+- reduces computation,
+- reduces the number of spatial locations,
+- allows later layers to operate on larger effective regions
+  of the input.
+
+The network trades some exact spatial detail for a more compact
+and feature-rich representation.
+
+### Our Plain CNN
+
+Input:
+
+3 x 32 x 32
+
+Then approximately:
+
+3 x 32 x 32
+-> 64 x 32 x 32
+-> 64 x 16 x 16
+-> 128 x 16 x 16
+-> 128 x 8 x 8
+-> 256 x 8 x 8
+-> 256 x 1 x 1
+-> 256
+-> 10 class logits
+
+
+
+
 ## PLAIN CNN BASELINE 
 
 ### Purpose

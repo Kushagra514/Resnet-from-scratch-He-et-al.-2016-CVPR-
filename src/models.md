@@ -157,3 +157,20 @@ x_(l+1) = x_l + F_l(x_l)
 
 The main experiment changes this formulation while keeping the
 classification task and dataset fixed.
+
+## Plain CNN Baseline
+
+The initial plain CNN baseline was trained for 50 epochs on CIFAR-10.
+
+Final training accuracy: 92.85%
+Final test accuracy: 71.28%
+
+Best observed test accuracy: 81.30% at epoch 37.
+
+The model continued improving on the training set while
+test performance became unstable and generally stopped
+improving consistently, indicating overfitting.
+
+This baseline establishes that the CIFAR-10 training pipeline
+and plain CNN implementation are functioning before introducing
+deeper architectures and residual connections.

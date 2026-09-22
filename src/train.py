@@ -108,7 +108,7 @@ def main():
         weight_decay=5e-4,
     )
 
-    epochs = 3
+    epochs = 50
 
     os.makedirs("experiments/results", exist_ok=True)
 

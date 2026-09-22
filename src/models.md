@@ -66,3 +66,15 @@ After flattening:
 A linear layer maps the 256 features into 10 class logits:
 256 -> 10
 
+### Plain vs Residual Formulation
+
+Plain network:
+
+x_(l+1) = H_l(x_l)
+
+Residual network:
+
+x_(l+1) = x_l + F_l(x_l)
+
+The main experiment changes this formulation while keeping the
+classification task and dataset fixed.

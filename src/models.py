@@ -43,3 +43,21 @@ class PlainCNN(nn.Module):
             # 8 x 8 -> 1 x 1
             nn.AdaptiveAvgPool2d((1,1)),
         )
+
+        def forward(self, x):
+            x = self.features(x)
+            x = torch.flatten(x,1)
+            return self.classifier(x)
+
+    if __name__ == "__main__":
+        model = PlainCNN()
+
+        x = torch.randn(8,3,32,32)
+
+        output = model(x)
+
+        print("Input:", x.shape)
+        print("Output:", output.shape)
+
+        
+

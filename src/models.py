@@ -39,3 +39,7 @@ class PlainCNN(nn.Module):
             nn.Conv2d(256,256,kernel_size=3,padding=1),
             nn.BatchNorm2d(256),
             nn.ReLU(),
+
+            # 8 x 8 -> 1 x 1
+            nn.AdaptiveAvgPool2d((1,1)),
+        )

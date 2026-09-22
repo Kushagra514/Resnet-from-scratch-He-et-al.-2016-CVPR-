@@ -5,6 +5,7 @@ class PlainCNN(nn.Module):
     def __init__(self,num_classes = 10):
         super().__init__()
 
+        self.classifier = nn.Linear(256, num_classes)
         self.features = nn.Sequential(
             # 3 -> 64 channels
             nn.Conv2d(3,64,kernel_size=3,padding=1),
@@ -21,7 +22,9 @@ class PlainCNN(nn.Module):
 
             # 64 -> 128 
             nn.Conv2d(64,128,kernel_size=3,padding=1),
-
+            nn.BatchNorm2d(128),
+            nn.ReLU(),
+            
             # 128 -> 128
             nn.Conv2d(128,128,kernel_size=3,padding=1),
             nn.BatchNorm2d(128),
@@ -31,7 +34,7 @@ class PlainCNN(nn.Module):
             nn.MaxPool2d(2),
 
             # 128 -> 256
-            nn.Conv2d(128,256,kernel_size=3,padding=1)
+            nn.Conv2d(128,256,kernel_size=3,padding=1),
             nn.BatchNorm2d(256),
             nn.ReLU(),
 
@@ -44,20 +47,20 @@ class PlainCNN(nn.Module):
             nn.AdaptiveAvgPool2d((1,1)),
         )
 
-        def forward(self, x):
-            x = self.features(x)
-            x = torch.flatten(x,1)
-            return self.classifier(x)
+    def forward(self, x):
+        x = self.features(x)
+        x = torch.flatten(x,1)
+        return self.classifier(x)
 
-    if __name__ == "__main__":
-        model = PlainCNN()
+if __name__ == "__main__":
+    model = PlainCNN()
 
-        x = torch.randn(8,3,32,32)
+    x = torch.randn(8,3,32,32)
 
-        output = model(x)
+    output = model(x)
 
-        print("Input:", x.shape)
-        print("Output:", output.shape)
+    print("Input:", x.shape)
+    print("Output:", output.shape)
 
-        
+
 

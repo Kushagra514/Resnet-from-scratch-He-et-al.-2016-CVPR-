@@ -376,3 +376,11 @@ the training algorithm.** The same loss → backpropagation
 
 ---
 
+## Summary
+
+> For each batch: the model makes predictions,
+> CrossEntropyLoss measures the error, backpropagation
+> computes gradients with respect to every learnable
+> parameter, and SGD updates those parameters. After each
+> epoch, the unchanged model is evaluated on the test set
+> to measure generalization.

@@ -24,7 +24,7 @@ class PlainCNN(nn.Module):
             nn.Conv2d(64,128,kernel_size=3,padding=1),
             nn.BatchNorm2d(128),
             nn.ReLU(),
-            
+
             # 128 -> 128
             nn.Conv2d(128,128,kernel_size=3,padding=1),
             nn.BatchNorm2d(128),
@@ -52,6 +52,14 @@ class PlainCNN(nn.Module):
         x = torch.flatten(x,1)
         return self.classifier(x)
 
+class DeepPlainCNN(nn.Module):
+    def __init__(self,num_classes = 10):
+        super.__init__()
+
+        self.features = nn.Sequential(
+            #s1 1: 4 convolutions
+            nn.convd
+        )
 if __name__ == "__main__":
     model = PlainCNN()
 

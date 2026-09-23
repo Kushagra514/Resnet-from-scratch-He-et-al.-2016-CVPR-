@@ -6,7 +6,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 from data import get_cifar10_loaders
-from models import PlainCNN
+from models import DeepPlainCNN
 
 
 def train_one_epoch(model, loader, criterion, optimizer, device):
@@ -97,7 +97,7 @@ def main():
         batch_size=128
     )
 
-    model = PlainCNN().to(device)
+    model = DeepPlainCNN().to(device)
 
     criterion = nn.CrossEntropyLoss()
 
@@ -113,7 +113,7 @@ def main():
     os.makedirs("experiments/results", exist_ok=True)
 
     with open(
-        "experiments/results/plain_baseline.csv",
+        "experiments/results/deep_plain.csv",
         "w",
         newline="",
     ) as file:

@@ -54,11 +54,11 @@ class PlainCNN(nn.Module):
 
 class DeepPlainCNN(nn.Module):
     def __init__(self,num_classes = 10):
-        super.__init__()
+        super().__init__()
 
         self.features = nn.Sequential(
             #s1 1: 4 convolutions
-            nn.conv2d(3,64,kernel_size = 3,padding = 1),
+            nn.Conv2d(3,64,kernel_size = 3,padding = 1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
 
@@ -67,11 +67,11 @@ class DeepPlainCNN(nn.Module):
             nn.ReLU(),
 
             nn.Conv2d(64,64,kernel_size = 3, padding = 1),
-            nn.BatchNorm2d9(64),
+            nn.BatchNorm2d(64),
             nn.ReLU(),
 
             nn.Conv2d(64,64,kernel_size = 3, padding = 1),
-            nn.BatchNorm2d9(64),
+            nn.BatchNorm2d(64),
             nn.ReLU(),
 
             # 32 x 32 -> 16 x 16

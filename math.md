@@ -119,3 +119,23 @@ The identity shortcut contains no learnable parameters whenn the input and outpu
 When dimensions change, a projection shortcut  can be used:
 y = F(x) + W_s * x
 where W_s is a learned projection that makes the dimensions compatible.
+
+## Why Residual Learning Helps Optimization
+
+Plain and residual formulations can represent the same
+functions, but solve different optimization problems.
+
+When a block should behave like the identity (H(x) = x):
+  Plain:     must learn weights that reproduce x → hard,
+             because identity is a specific configuration.
+  Residual:  must learn F(x) = 0 → easy, because weights
+             are initialized near zero and only need to be
+             shrunk.
+
+In deep networks, most blocks should make only small changes,
+so H(x) ≈ x for most blocks. The residual formulation makes
+this common case cheap to learn.
+
+This is why deeper residual networks do not degrade: the
+worst-case behavior of a residual block (doing nothing) is
+easy to achieve, so adding depth cannot increase training error.

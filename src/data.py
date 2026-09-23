@@ -39,12 +39,3 @@ def get_cifar10_loaders(batch_size=128):
     )
 
     return train_loader, test_loader
-
-
-if __name__ == "__main__":
-    train_loader, test_loader = get_cifar10_loaders()
-
-    images, labels = next(iter(train_loader))
-
-    print("Images:", images.shape)
-    print("Labels:", labels.shape)

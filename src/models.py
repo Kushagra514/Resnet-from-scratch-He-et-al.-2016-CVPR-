@@ -58,7 +58,24 @@ class DeepPlainCNN(nn.Module):
 
         self.features = nn.Sequential(
             #s1 1: 4 convolutions
-            nn.convd
+            nn.conv2d(3,64,kernel_size = 3,padding = 1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
+
+            nn.Conv2d(64,64,kernel_size = 3,padding = 1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
+
+            nn.Conv2d(64,64,kernel_size = 3, padding = 1),
+            nn.BatchNorm2d9(64),
+            nn.ReLU(),
+
+            nn.Conv2d(64,64,kernel_size = 3, padding = 1),
+            nn.BatchNorm2d9(64),
+            nn.ReLU(),
+
+            #s2 2 : 4 convs
+            
         )
 if __name__ == "__main__":
     model = PlainCNN()

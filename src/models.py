@@ -75,6 +75,25 @@ class DeepPlainCNN(nn.Module):
             nn.ReLU(),
 
             #s2 2 : 4 convs
+            nn.Conv2d(64,128,kernel_size = 3,padding = 1),
+            nn.BatchNorm2d(128),
+            nn.ReLU(),
+
+            nn.Conv2d(128,128,kernel_size = 3,padding = 1),
+            nn.BatchNorm2d(128),
+            nn.ReLU(),
+
+            nn.Conv2d(128,128,kernel_size = 3,padding = 1),
+            nn.BatchNorm2d(128),
+            nn.ReLU(),
+
+            nn.Conv2d(128,128,kernel_size = 3,padding = 1),
+            nn.BatchNorm2d(128),
+            nn.ReLU(),
+
+            nn.Conv2d(128,128,kernel_size = 3,padding = 1),
+            nn.BatchNorm2d(128),
+            nn.ReLU(),
             
         )
 if __name__ == "__main__":

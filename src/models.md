@@ -1,176 +1,88 @@
-## PREREQUISITES
+# Model Architecture
 
-### Channels
+## 1. Why the architecture changed
 
-A channel is one feature plane.
+The preliminary custom 6-layer vs 13-layer plain CNN experiment did not clearly reproduce the degradation problem. It remains useful history, but it was not closely aligned with the CIFAR architecture family used in the ResNet paper.
 
-A CIFAR-10 RGB image has 3 channels:
+The main experiment now uses `PlainCIFARNet`, a paper-inspired `6n + 2` plain network. This makes depth a clearer controlled variable and prepares a later comparison with a residual network of similar structure. It does not guarantee that degradation will appear.
 
-- Red
-- Green
-- Blue
+## 2. CIFAR architecture
 
-A convolution can produce many learned feature channels.
-These are feature maps produced by different learned filters.
+```text
+Input: 3 x 32 x 32
+        |
+3 x 3 convolution -> 16 channels
+        |
+Stage 1: n blocks, 16 channels, 32 x 32
+        |
+Stage 2: n blocks, 32 channels, 16 x 16
+        |
+Stage 3: n blocks, 64 channels, 8 x 8
+        |
+Global average pooling -> 64
+        |
+Linear -> 10 class logits
+```
 
-For example:
+The network increases channels from 16 to 32 to 64 while reducing spatial resolution from 32 to 16 to 8. This trades some spatial detail for richer channel-wise feature representations and lower spatial computation. Stage 2 and Stage 3 begin with stride-2 convolutions; there is no max-pooling layer.
 
-3 input channels -> 64 learned feature maps
+The current main model is `PlainCIFARNet(depth=20)`. The implementation also supports valid depths such as 32 and 44.
 
-does not mean the image has 64 colors. It means the layer
-learns 64 different feature detectors.
+## 3. Depth convention
 
-### Spatial Resolution
+```text
+3 stages x n blocks x 2 convolutions = 6n convolutions
+1 initial convolution + 1 final fully connected layer
 
-Spatial resolution refers to the height and width of a
-feature map.
+paper depth = 6n + 2
+```
 
-For example:
+Therefore:
 
-32 x 32 -> 16 x 16 -> 8 x 8
+```text
+depth 20 -> n = 3
+depth 32 -> n = 5
+depth 44 -> n = 7
+```
 
-means the spatial representation is being downsampled.
+`depth=30` is not used because it does not satisfy `(depth - 2) % 6 == 0`. The code validates this condition and reports the number of convolutional and paper-depth layers in its smoke test.
 
-### Why Increase Channels?
+## 4. Plain block
 
-As the spatial resolution becomes smaller, the network can
-use more feature channels to represent different kinds of
-learned patterns.
+Each block is:
 
-The architecture therefore roughly follows:
+```text
+Conv -> BatchNorm -> ReLU -> Conv -> BatchNorm -> ReLU
+```
 
-spatial resolution ↓
-feature channels ↑
+Convolutions use `bias=False` because BatchNorm follows them immediately. There are no shortcut connections. The plain network learns the complete transformation directly:
 
-This is a common CNN design pattern.
+```text
+Plain:    y = H(x)
+Residual: y = F(x) + x
+```
 
-### Why Reduce Spatial Resolution?
+A later residual model will preserve `x` through a shortcut and learn the residual modification `F(x)`. This file documents the plain baseline only.
 
-Downsampling:
+## 5. Core layers
 
-- reduces computation,
-- reduces the number of spatial locations,
-- allows later layers to operate on larger effective regions
-  of the input.
+- **Convolution:** learns local feature detectors from neighboring pixels.
+- **BatchNorm:** normalizes activations and learns scale and shift parameters, helping optimization.
+- **ReLU:** adds non-linearity: `ReLU(x) = max(0, x)`.
+- **Global average pooling:** converts each final feature map to one value, producing 64 features without a large fully connected spatial vector.
 
-The network trades some exact spatial detail for a more compact
-and feature-rich representation.
+## 6. Interview checks
 
-### Our Plain CNN
+**Why change 64/128/256 to 16/32/64?**  The new widths match the paper-inspired CIFAR architecture family and make depth comparisons more controlled.
 
-Input:
+**Why does depth equal `6n + 2`?**  There are three stages, `n` blocks per stage, two convolutions per block, one initial convolution, and one final fully connected layer.
 
-3 x 32 x 32
+**Why increase channels as resolution decreases?**  Fewer spatial locations reduce computation, while more channels preserve richer learned representations.
 
-Then approximately:
+**Why no MaxPool?**  Downsampling is performed by stride-2 convolutions at the start of Stages 2 and 3.
 
-3 x 32 x 32
--> 64 x 32 x 32
--> 64 x 16 x 16
--> 128 x 16 x 16
--> 128 x 8 x 8
--> 256 x 8 x 8
--> 256 x 1 x 1
--> 256
--> 10 class logits
+**Is this an exact reproduction?**  No. It is an educational, paper-inspired implementation, not a claim to reproduce every architecture and training detail of the original paper.
 
+## 7. Preliminary baseline record
 
-
-
-## PLAIN CNN BASELINE 
-
-### Purpose
-
-The plain CNN is the control model for the ResNet experiment.
-It does not contain skip connections or residual blocks, its transformations are applied sequentially:
-x -> H_1(x) -> H_2(x) -> H_3(x) -> ...
-
-Each H_i is implemented using learnable layers such as convolution, batch normalization, and a non linear activation.
-
-### What the network learns?
-
-The network is trained only using the final classification loss.
-Backpropogation computes gradients of the loss with respect to the learnable parameters, and an optimizer updates those parameters.
-The intermediate activations are not seperately supervised.
-
-### Convolution
-
-A convolution applies learned filters to local regions of the input.
-The convolution weights determine which local patterns the network corresponds to.
-
-### Multiple Convolution Layers
-
-Stacking convolutional layers allows later layers to operate on features produced by earlier layers, and thus learn more complex representation.
-The network therefore builds incresingly useful feature representations as a consequence of learning its parameters.
-
-### ReLU
-
-ReLU is:
-
-ReLU(x) = max(0,x)
-
-It introduces non linearity into the network.
-
-### Batch Normalization
-
-Batch Normalization helps keep activations numerically well-behaved during training and contains learnable scale and shift parameters.
-
-### Max Pooling 
-
-Max pooling reduces spatial resolution.
-For eg : 32 x 32 -> 16 x 16 
-This reduces computation and gives later layers a larger effective receptive field.
-
-### Increasing Channels
-
-The network increases the number of feature channels while reducing spatial resolution:
-3 x 32 x 32 
-->  64 x 32 x 32
-->  64 x 16 x 16
-->  128 x 16 x 16
-->  128 x 8 x 8
-->  256 x 8 x 8 
-This allows the network to represent more feature type while using a more compact spatial resolution 
-
-
-### Final Classification 
-
-Adaptive average pooling converts:
-
-256 x 8 x 8 -> 256 x 1 x 1 
-
-After flattening:
-256 x 1 x 1 -> 256
-
-A linear layer maps the 256 features into 10 class logits:
-256 -> 10
-
-### Plain vs Residual Formulation
-
-Plain network:
-
-x_(l+1) = H_l(x_l)
-
-Residual network:
-
-x_(l+1) = x_l + F_l(x_l)
-
-The main experiment changes this formulation while keeping the
-classification task and dataset fixed.
-
-## Plain CNN Baseline
-
-The initial plain CNN baseline was trained for 50 epochs on CIFAR-10.
-
-Final training accuracy: 92.85%
-Final test accuracy: 71.28%
-
-Best observed test accuracy: 81.30% at epoch 37.
-
-The model continued improving on the training set while
-test performance became unstable and generally stopped
-improving consistently, indicating overfitting.
-
-This baseline establishes that the CIFAR-10 training pipeline
-and plain CNN implementation are functioning before introducing
-deeper architectures and residual connections.
+The original plain CNN baseline was trained for 50 epochs. Its recorded final training accuracy was 92.85% and final test accuracy was 71.28%; its best observed test accuracy was 81.30% at epoch 37. These results are retained as preliminary history and are not silently relabeled as results from `PlainCIFARNet`.

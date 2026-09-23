@@ -123,9 +123,13 @@ class DeepPlainCNN(nn.Module):
 
         self.classifier = nn.Linear(256, num_classes)
 
-        
+        def forward(self, x):
+            x = self.features(x)
+            x = torch.flatten(x,1)
+            return self.classifier(x)
+
 if __name__ == "__main__":
-    model = PlainCNN()
+    model = DeepPlainCNN()
 
     x = torch.randn(8,3,32,32)
 

@@ -74,6 +74,9 @@ class DeepPlainCNN(nn.Module):
             nn.BatchNorm2d9(64),
             nn.ReLU(),
 
+            # 32 x 32 -> 16 x 16
+            nn.MaxPool2d(2),
+
             #s2 2 : 4 convs
             nn.Conv2d(64,128,kernel_size = 3,padding = 1),
             nn.BatchNorm2d(128),
@@ -95,6 +98,9 @@ class DeepPlainCNN(nn.Module):
             nn.BatchNorm2d(128),
             nn.ReLU(),
 
+            # 16 x 16 -> 8 x 8
+            nn.MaxPool2d(2),
+
             #s3 3 : 4 convs
             nn.Conv2d(128,256,kernel_size = 3, padding = 1),
             nn.BatchNorm2d(256),
@@ -112,8 +118,12 @@ class DeepPlainCNN(nn.Module):
             nn.BatchNorm2d(256),
             nn.ReLU(),
 
-            
+            nn.AdaptiveAvgPool2d((1,1)),
         )
+
+        self.classifier = nn.Linear(256, num_classes)
+
+        
 if __name__ == "__main__":
     model = PlainCNN()
 

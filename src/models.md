@@ -26,7 +26,9 @@ Linear -> 10 class logits
 
 The network increases channels from 16 to 32 to 64 while reducing spatial resolution from 32 to 16 to 8. This trades some spatial detail for richer channel-wise feature representations and lower spatial computation. Stage 2 and Stage 3 begin with stride-2 convolutions; there is no max-pooling layer.
 
-The current main model is `PlainCIFARNet(depth=20)`. The implementation also supports valid depths such as 32 and 44.
+The implementation provides both `PlainCIFARNet` and `ResNetCIFAR` with the
+same CIFAR-style stage layout. The recorded residual experiments use depths
+20, 32, and 50.
 
 ## 3. Depth convention
 
@@ -40,9 +42,9 @@ paper depth = 6n + 2
 Therefore:
 
 ```text
-depth 20 -> n = 3
-depth 32 -> n = 5
-depth 44 -> n = 7
+ResNet-20 -> n = 3 -> 3 residual blocks per stage
+ResNet-32 -> n = 5 -> 5 residual blocks per stage
+ResNet-50 -> n = 8 -> 8 residual blocks per stage
 ```
 
 `depth=30` is not used because it does not satisfy `(depth - 2) % 6 == 0`. The code validates this condition and reports the number of convolutional and paper-depth layers in its smoke test.
@@ -62,7 +64,17 @@ Plain:    y = H(x)
 Residual: y = F(x) + x
 ```
 
-A later residual model will preserve `x` through a shortcut and learn the residual modification `F(x)`. This file documents the plain baseline only.
+The residual implementation preserves the input through a shortcut and learns
+the residual modification:
+
+```text
+Residual: y = F(x) + shortcut(x)
+```
+
+When the input and output shapes match, `shortcut(x)` is `nn.Identity()`. At
+Stage 2 and Stage 3 transitions, where channels and spatial resolution
+change, the shortcut is a 1 x 1 convolution with the same stride followed by
+BatchNorm so that it can be added to the residual branch.
 
 ## 5. Core layers
 
@@ -86,3 +98,228 @@ A later residual model will preserve `x` through a shortcut and learn the residu
 ## 7. Preliminary baseline record
 
 The original plain CNN baseline was trained for 50 epochs. Its recorded final training accuracy was 92.85% and final test accuracy was 71.28%; its best observed test accuracy was 81.30% at epoch 37. These results are retained as preliminary history and are not silently relabeled as results from `PlainCIFARNet`.
+
+## Understanding Tensor Dimensions
+
+A CNN tensor has the form:
+
+    [batch, channels, height, width]
+
+For example:
+
+    [8, 64, 32, 32]
+
+means:
+- 8 images in the batch
+- 64 feature channels per image
+- each feature map is 32×32
+
+### Changing channels vs changing spatial resolution
+
+A convolution such as:
+
+    Conv2d(64, 128, ...)
+
+changes:
+
+    64 channels → 128 channels
+
+but may keep:
+
+    32×32 → 32×32
+
+if stride=1 and padding is appropriate.
+
+A pooling operation such as:
+
+    MaxPool2d(2)
+
+changes:
+
+    32×32 → 16×16
+
+but keeps:
+
+    64 channels → 64 channels
+
+Therefore:
+
+    Before pooling:
+    [batch, 64, 32, 32]
+
+    After pooling:
+    [batch, 64, 16, 16]
+
+    After Conv2d(64,128):
+    [batch, 128, 16, 16]
+
+The channel dimension and spatial dimensions are separate concepts.
+
+## Global Average Pooling
+
+At the end of the CNN we have:
+
+    [batch, 64, 8, 8]
+
+AdaptiveAvgPool2d((1,1)) operates independently on every image
+and every channel.
+
+For each channel, it averages the 8×8 spatial values:
+
+    8×8 = 64 values
+         ↓
+    average
+         ↓
+    1 value
+
+Therefore:
+
+    [batch, 64, 8, 8]
+             ↓
+    [batch, 64, 1, 1]
+
+The batch dimension is NOT mixed together.
+
+For a batch of 8 images:
+
+    8 images
+    ×
+    64 channels
+    ×
+    8×8 spatial values
+
+becomes:
+
+    8 images
+    ×
+    64 values
+
+After flattening:
+
+    [8, 64]
+
+This can then be passed to:
+
+    Linear(64, 10)
+
+## From Feature Maps to Class Predictions
+
+After the three convolutional stages, a batch of 8 images has the shape:
+
+    [8, 64, 8, 8]
+
+This means:
+
+    8  = number of images in the batch
+    64 = feature channels for each image
+    8 × 8 = spatial size of each feature map
+
+### Global Average Pooling
+
+We apply:
+
+    AdaptiveAvgPool2d((1, 1))
+
+This operates independently on every image and every channel.
+
+For one image:
+
+    Channel 1: 8 × 8 → 1 value
+    Channel 2: 8 × 8 → 1 value
+    ...
+    Channel 64: 8 × 8 → 1 value
+
+For each channel, the 8 × 8 values are averaged:
+
+    64 spatial values
+          ↓
+       average
+          ↓
+       1 value
+
+Therefore:
+
+    [8, 64, 8, 8]
+            ↓
+    [8, 64, 1, 1]
+
+The batch dimension is NOT mixed together. Each image is processed
+independently.
+
+### Flattening
+
+We then use:
+
+    torch.flatten(x, 1)
+
+The `1` means:
+
+    Keep dimension 0 (the batch)
+    Flatten dimensions 1 and beyond
+
+Therefore:
+
+    [8, 64, 1, 1]
+            ↓
+    [8, 64]
+
+Now each image is represented by 64 numbers.
+
+Conceptually:
+
+    Image 1 → [64 features]
+    Image 2 → [64 features]
+    Image 3 → [64 features]
+    ...
+    Image 8 → [64 features]
+
+So `[8, 64]` means:
+
+    8 separate images
+    ×
+    64 features describing each image
+
+### Final Classifier
+
+The final layer is:
+
+    Linear(64, 10)
+
+This takes the 64 features from EACH image and produces 10 numbers:
+
+    [8, 64]
+       ↓
+    Linear(64, 10)
+       ↓
+    [8, 10]
+
+Therefore each image gets 10 output values, one corresponding to each
+CIFAR-10 class.
+
+For example:
+
+    Image 1 → 64 features → 10 class scores
+    Image 2 → 64 features → 10 class scores
+    ...
+    Image 8 → 64 features → 10 class scores
+
+The 10 outputs are logits, not probabilities. CrossEntropyLoss uses these
+logits during training.
+
+The complete final transformation is:
+
+    [batch, 64, 8, 8]
+             ↓
+    Global Average Pooling
+             ↓
+    [batch, 64, 1, 1]
+             ↓
+    Flatten
+             ↓
+    [batch, 64]
+             ↓
+    Linear(64, 10)
+             ↓
+    [batch, 10]
+
+    

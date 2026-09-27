@@ -83,3 +83,24 @@ The next comparison will use a deeper plain model and then a residual counterpar
 ## 8. Training history note
 
 The old training code and CSV outputs remain useful for understanding the preliminary custom architecture. They should not be compared as though they came from the new `PlainCIFARNet` setup without accounting for the architecture change.
+
+## Current Result: PlainCIFARNet-20
+
+The 20-layer plain network successfully learns the CIFAR-10 training set.
+
+After 50 epochs:
+
+    Training loss:     ~0.431
+    Training accuracy: ~85.1%
+    Test accuracy:     ~72.5%
+
+The training loss decreases steadily and training accuracy increases,
+showing that the model is successfully optimizing.
+
+However, test accuracy fluctuates considerably between epochs. This is
+not interpreted as the degradation problem because degradation requires
+a comparison between networks of different depths.
+
+The next experiment is therefore to train a deeper plain network using
+the same architecture family and training setup, then compare its
+training behavior against PlainCIFARNet-20.

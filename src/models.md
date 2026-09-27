@@ -71,7 +71,7 @@ A later residual model will preserve `x` through a shortcut and learn the residu
 - **ReLU:** adds non-linearity: `ReLU(x) = max(0, x)`.
 - **Global average pooling:** converts each final feature map to one value, producing 64 features without a large fully connected spatial vector.
 
-## 6. Interview checks
+## 6. Insights at a glance
 
 **Why change 64/128/256 to 16/32/64?**  The new widths match the paper-inspired CIFAR architecture family and make depth comparisons more controlled.
 

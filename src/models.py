@@ -183,7 +183,7 @@ class PlainCIFARNet(nn.Module):
     @property
     def learnable_layers(self):
         return self.convolutional_layers + 1
-
+    
     def forward(self, x):
         x = self.initial(x)
         x = self.stage1(x)

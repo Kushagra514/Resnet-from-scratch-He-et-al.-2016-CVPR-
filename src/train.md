@@ -21,7 +21,7 @@ Epochs: 50
 Results: experiments/results/plain_cifar20.csv
 ```
 
-The model accepts `[N, 3, 32, 32]` images and produces `[N, 10]` class logits. The existing `plain_baseline.csv` and `deep_plain.csv` files are preserved as preliminary experiment history.
+The model accepts `[N, 3, 32, 32]` images and produces `[N, 10]` class logits. The existing `plain_baseline.csv` and `deep_plain.csv` files are preserved as preliminary experiment history which were 6 layered and 13 layered which were not showing any visible degradation.
 
 ## 3. Controlled variables
 

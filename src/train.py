@@ -97,7 +97,7 @@ def main():
         batch_size=128
     )
 
-    model = PlainCIFARNet(depth=20).to(device)
+    model = PlainCIFARNet(depth=32).to(device)
 
     criterion = nn.CrossEntropyLoss()
 
@@ -113,7 +113,7 @@ def main():
     os.makedirs("experiments/results", exist_ok=True)
 
     with open(
-        "experiments/results/plain_cifar20.csv",
+        "experiments/results/plain_cifar32.csv",
         "w",
         newline="",
     ) as file:
